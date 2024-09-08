@@ -11,16 +11,24 @@ public class GameState_GamePlay : IGameState
 {
     public void EnterState(GameStateManager gameStateManager)
     {
+        Time.timeScale = 1f;
         Cursor.visible = false;
-        gameStateManager._uIManager.UIGamePlay();   
-
+        gameStateManager._uIManager.UIGamePlay();
+        gameStateManager._playerManager.player.SetActive(true);
+        gameStateManager._cameraManager.playerCamera.enabled = true;
+        gameStateManager._cameraManager.isCameraMoveEnabled = true;
     }
 
     public void FixedUpdateState(GameStateManager gameStateManager) { }
 
     public void UpdateState(GameStateManager gameStateManager)
     {
-       
+        if(gameStateManager._inputManager.isPauseKeyPressed)
+        {            
+            gameStateManager.Pause();
+        }
+        
+
     }
 
     public void LateUpdateState(GameStateManager gameStateManager) { }

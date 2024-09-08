@@ -10,7 +10,12 @@ public class GameState_Options : IGameState
 {
     void IGameState.EnterState(GameStateManager gameStateManager)
     {
+        Time.timeScale = 0f;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
 
+        gameStateManager._uIManager.UIOptions();
+        gameStateManager._cameraManager.isCameraMoveEnabled = false;
     }
 
     void IGameState.FixedUpdateState(GameStateManager gameStateManager)

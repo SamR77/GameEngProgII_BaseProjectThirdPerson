@@ -2,17 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Sam Robichaud 
+// NSCC Truro 2024
+// This work is licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 public class InputManager : MonoBehaviour
 {
+    // Script References
     [SerializeField] private PlayerLocomotionHandler playerLocomotionHandler;
+    [SerializeField] private CameraManager cameraManager; // Reference to CameraManager
 
-    public Vector2 movementInput;
 
-    public float moveAmount;
+    [Header("Movement Inputs")]
     public float verticalInput;
     public float horizontalInput;
+    public bool jumpInput;
+    public Vector2 movementInput;
+    public float moveAmount;
 
+    [Header("Camera Inputs")]
+    public float scrollInput; // Scroll input for camera zoom
+    public Vector2 cameraInput; // Mouse input for the camera
+
+    public bool isPauseKeyPressed = false;
 
 
     public void HandleAllInputs()
@@ -21,14 +33,21 @@ public class InputManager : MonoBehaviour
         HandleSprintingInput();
         HandleJumpInput();
         HandleCameraInput();
+        HandlePauseKeyInput();
     }
 
+    private void HandleCameraInput()
+    {        
+            // Get mouse input for the camera
+            cameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-    private void HandleJumpInput()
-    {
+            // Get scroll input for camera zoom
+            scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
+            // Send inputs to CameraManager
+            cameraManager.zoomInput = scrollInput;
+            cameraManager.cameraInput = cameraInput;        
     }
-
 
     private void HandleMovementInput()
     {
@@ -38,9 +57,9 @@ public class InputManager : MonoBehaviour
         moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
     }
 
-    private void HandleCameraInput()
+    private void HandlePauseKeyInput()
     {
-        // TODO Move Camera inputs here and connect to cameraManager;
+        isPauseKeyPressed = Input.GetKeyDown(KeyCode.Escape); // Detect the escape key press
     }
 
     private void HandleSprintingInput()
@@ -54,6 +73,18 @@ public class InputManager : MonoBehaviour
             playerLocomotionHandler.isSprinting = false;
         }
     }
+
+    private void HandleJumpInput()
+    {
+        jumpInput = Input.GetKeyDown(KeyCode.Space); // Detect jump input (spacebar)
+        if (jumpInput)
+        {
+            playerLocomotionHandler.HandleJump(); // Trigger jump in locomotion handler
+        }
+    }
+
+
+
 
 
 }

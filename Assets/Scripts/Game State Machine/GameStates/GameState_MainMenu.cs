@@ -14,7 +14,11 @@ public class GameState_MainMenu : IGameState
         // May want to consider locking the cursor to the center of the screen
 
         gameStateManager._uIManager.UIMainMenu();
-        //gameStateManager._cameraManager.UseMainMenuCamera();     
+        gameStateManager._playerManager.player.SetActive(false);
+        gameStateManager._cameraManager.playerCamera.enabled = false;
+        gameStateManager._cameraManager.isCameraMoveEnabled = false;
+
+        
     }
 
     public void FixedUpdateState(GameStateManager gameStateManager) { }

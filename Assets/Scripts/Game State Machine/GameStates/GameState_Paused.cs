@@ -13,7 +13,7 @@ public class GameState_Paused : IGameState
         Cursor.lockState = CursorLockMode.Confined;
 
         gameStateManager._uIManager.UIPaused();
-        //gameStateManager._cameraManager.DisableCameraRotation();
+        gameStateManager._cameraManager.isCameraMoveEnabled = false;
     }
 
     public void FixedUpdateState(GameStateManager gameStateManager) {    }
@@ -21,7 +21,7 @@ public class GameState_Paused : IGameState
     public void UpdateState(GameStateManager gameStateManager)
     {
         // Pressing ESC key will unpause the game, Switch to last state stored
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (gameStateManager._inputManager.isPauseKeyPressed)
         {
             gameStateManager.UnPause();
         }

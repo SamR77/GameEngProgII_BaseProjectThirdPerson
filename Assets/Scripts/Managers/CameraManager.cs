@@ -2,10 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Sam Robichaud 
+// NSCC Truro 2024
+// This work is licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
 public class CameraManager : MonoBehaviour
 {
     [Header("Reference to the player's camera")]
-    [SerializeField] private Camera playerCamera;
+    [SerializeField] public Camera playerCamera;
 
     [Header("The target the camera will follow")]
     [SerializeField] private Transform followTarget;
@@ -24,6 +28,12 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float yMinLimit = -20f; // Minimum vertical angle
     [SerializeField] private float yMaxLimit = 80f; // Maximum vertical angle
 
+    [Header("Camera Inputs, values fed from InputManager")]
+    public Vector2 cameraInput;
+    public float zoomInput;
+
+    public bool isCameraMoveEnabled = true;
+
     // Initial camera rotation angles
     private float x = 0.0f;
     private float y = 0.0f;
@@ -39,13 +49,23 @@ public class CameraManager : MonoBehaviour
         y = angles.x;
     }
 
-    public void HandleCamera()
+    private void LateUpdate()
     {
+        if (isCameraMoveEnabled)
+        { HandleCamera(); }
+        
+    }
+
+
+    private void HandleCamera()
+    {
+        
+
         // Exit if there is no target
         if (followTarget == null) return; //set a debug error
 
         // Update the camera rotation and distance
-        UpdateRotation();
+        UpdateCameraRotation();
         UpdateDistance();
 
         // Calculate the new camera rotation and position
@@ -58,13 +78,13 @@ public class CameraManager : MonoBehaviour
         playerCamera.transform.position = position;
     }
 
-    private void UpdateRotation()
+    private void UpdateCameraRotation()
     {
         // Update the horizontal rotation based on mouse X movement
-        x += Input.GetAxis("Mouse X") * xSpeed * Time.deltaTime;
+        x += cameraInput.x * xSpeed * Time.deltaTime;
 
         // Update the vertical rotation based on mouse Y movement
-        y -= Input.GetAxis("Mouse Y") * ySpeed * Time.deltaTime;
+        y -= cameraInput.y * ySpeed * Time.deltaTime;
 
         // Clamp the vertical rotation to the specified limits
         y = Mathf.Clamp(y, yMinLimit, yMaxLimit);
@@ -73,7 +93,7 @@ public class CameraManager : MonoBehaviour
     private void UpdateDistance()
     {
         // Update the distance based on mouse scroll wheel input
-        distance -= Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime * 1000;
+        distance -= zoomInput * Time.deltaTime * 1000;
 
         // Clamp the distance to the specified limits
         distance = Mathf.Clamp(distance, minDistance, maxDistance);

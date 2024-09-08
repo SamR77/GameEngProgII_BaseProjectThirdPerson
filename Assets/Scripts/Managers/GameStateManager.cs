@@ -11,10 +11,12 @@ public class GameStateManager : MonoBehaviour
     [SerializeField] private string currentActiveState;
 
     [Header("Script References")]
+    public CameraManager _cameraManager;
     public GameManager _gameManager;
     public LevelManager _levelManager;
+    public PlayerManager _playerManager;
     public UIManager _uIManager;
-    public CameraManager _cameraManager;
+    public InputManager _inputManager;
 
     // Private variables to store state information
     private IGameState currentGameState;  // Current active state
@@ -41,24 +43,26 @@ public class GameStateManager : MonoBehaviour
     void Awake()
     {
         // Check for missing script references
-        if (_gameManager == null) { Debug.LogError("GameManager is not assigned in the Inspector!"); }
-        if (_levelManager == null) { Debug.LogError("LevelManager is not assigned in the Inspector!"); }
-        if (_uIManager == null) { Debug.LogError("UIManager is not assigned in the Inspector!"); }
-
-        if (_cameraManager == null) { Debug.LogError("CameraManager is not assigned in the Inspector!"); }
-
-        // Start in the GameInit state when the game is first loaded
-        // GameInit is responsible for initializing/resetting the game
-        currentGameState = gameState_GameInit;
+        if (_cameraManager == null) { Debug.LogError("CameraManager is not assigned to GameStateManager in the Inspector!"); }
+        if (_gameManager == null) { Debug.LogError("GameManager is not assigned to GameStateManager in the Inspector!"); }
+        if (_levelManager == null) { Debug.LogError("LevelManager is not assigned to GameStateManager in the Inspector!"); }
+        if (_playerManager == null) { Debug.LogError("PlayerManager is not assigned to GameStateManager in the Inspector!"); }
+        if (_uIManager == null) { Debug.LogError("UIManager is not assigned to GameStateManager in the Inspector!"); }
+        if (_inputManager == null) { Debug.LogError("InputManager is not assigned to GameStateManager in the Inspector!"); }
     }
-
-    #region State Machine Update Calls
-
     void Start()
     {
+        // Sets currentGameState to GameInitState when GameStateManager is initialized / first loaded
+        // GameInitState is responsible for initializing/resetting the game
+        currentGameState = gameState_GameInit;
+
         // Enter the initial game state
         currentGameState.EnterState(this);
     }
+
+
+    #region State Machine Update Calls
+
 
     // Fixed update is called before update, and is used for physics calculations
     private void FixedUpdate()
@@ -73,6 +77,7 @@ public class GameStateManager : MonoBehaviour
         currentGameState.UpdateState(this);
 
         // Keeping track of active and last states for debugging purposes
+        // TODO: I can probably move these out of Update and just set them when switching states ... look into moving down into SwitchToState method
         currentActiveState = currentGameState.ToString();   // Show current state in Inspector
         lastActiveState = lastGameState?.ToString();        // Show last state in Inspector
     }
@@ -102,13 +107,49 @@ public class GameStateManager : MonoBehaviour
     }
 
 
+
+    public void Pause()
+    {
+        if (currentGameState != gameState_Paused)
+        {
+            SwitchToState(gameState_Paused);
+        }
+    }    
+    
     // UI Button calls this to resume the game when paused
     public void UnPause()
     {
         if (currentGameState == gameState_Paused)
         {            
-                SwitchToState(gameState_GamePlay);
+            SwitchToState(gameState_GamePlay);
         }
     }
+
+    public void OpenCredits()
+    {       
+        SwitchToState(gameState_Credits);      
+    }
+
+    public void OpenOptions()
+    {
+        SwitchToState(gameState_Options);
+    }
+
+    public void GoBack()
+    {        
+        SwitchToState(lastGameState);       
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
